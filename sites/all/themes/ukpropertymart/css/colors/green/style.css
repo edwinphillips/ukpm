@@ -1,0 +1,307 @@
+/* COLORS */
+/* font size */
+/* font */
+/* effect */
+/* button */
+/*color blue*/
+/* line 4, ../../../sass/colors/green/style.scss */
+a {
+  color: #8cc474;
+}
+
+/*back to top*/
+/* line 9, ../../../sass/colors/green/style.scss */
+.btn-btt:hover, .btn-btt:focus {
+  background-color: #8cc474;
+}
+
+/* line 14, ../../../sass/colors/green/style.scss */
+.form-submit {
+  background-color: #8cc474;
+}
+
+/*logo*/
+/* line 19, ../../../sass/colors/green/style.scss */
+#logo {
+  background-color: #8cc474;
+}
+
+/*headline*/
+/* line 28, ../../../sass/colors/green/style.scss */
+.headline ul.menu li a:hover, .headline ul.menu li a:focus {
+  color: #8cc474;
+}
+
+/*menu*/
+/* line 40, ../../../sass/colors/green/style.scss */
+#main-menu-inner ul > li.active > a {
+  color: #8cc474;
+}
+/* line 45, ../../../sass/colors/green/style.scss */
+#main-menu-inner ul li.dropdown.open > a {
+  color: #8cc474;
+}
+/* line 51, ../../../sass/colors/green/style.scss */
+#main-menu-inner ul li a:hover, #main-menu-inner ul li a:focus {
+  color: #8cc474;
+}
+/* line 58, ../../../sass/colors/green/style.scss */
+#main-menu-inner ul .dropdown-submenu:hover > a, #main-menu-inner ul .dropdown-submenu:focus > a {
+  color: white;
+  background-color: #8cc474;
+}
+/* line 67, ../../../sass/colors/green/style.scss */
+#main-menu-inner .mega-nav li a {
+  color: white;
+}
+/* line 69, ../../../sass/colors/green/style.scss */
+#main-menu-inner .mega-nav li a:hover, #main-menu-inner .mega-nav li a:focus {
+  color: white;
+  background-color: #8cc474;
+}
+/* line 76, ../../../sass/colors/green/style.scss */
+#main-menu-inner .mega-nav > li.active > a {
+  background-color: #8cc474;
+  color: white;
+}
+
+/*slideshow*/
+/* line 86, ../../../sass/colors/green/style.scss */
+.slideshow .views-field-field-price {
+  background-color: #8cc474;
+}
+/* line 91, ../../../sass/colors/green/style.scss */
+.slideshow .views-field-title a:hover, .slideshow .views-field-title a:focus {
+  color: #8cc474;
+}
+/* line 98, ../../../sass/colors/green/style.scss */
+.slideshow .views-slideshow-controls-bottom span:hover, .slideshow .views-slideshow-controls-bottom span:focus {
+  background-color: #8cc474;
+}
+/* line 105, ../../../sass/colors/green/style.scss */
+.slideshow .flex-direction-nav a:hover, .slideshow .flex-direction-nav a:focus {
+  background-color: #8cc474;
+}
+
+/*exposed form*/
+/* line 114, ../../../sass/colors/green/style.scss */
+.views-exposed-form .form-submit {
+  background-color: #8cc474;
+}
+
+/*properties*/
+/* line 126, ../../../sass/colors/green/style.scss */
+.properties-grid-page .grid-inner .views-field-title a:hover, .properties-grid-page .grid-inner .views-field-title a:focus,
+.isotope-element .grid-inner .views-field-title a:hover,
+.isotope-element .grid-inner .views-field-title a:focus,
+#content .views-view-grid .grid-inner .views-field-title a:hover,
+#content .views-view-grid .grid-inner .views-field-title a:focus {
+  color: #8cc474;
+}
+/* line 135, ../../../sass/colors/green/style.scss */
+.properties-grid-page .views-field-field-business-type .field-content a:hover, .properties-grid-page .views-field-field-business-type .field-content a:focus,
+.isotope-element .views-field-field-business-type .field-content a:hover,
+.isotope-element .views-field-field-business-type .field-content a:focus,
+#content .views-view-grid .views-field-field-business-type .field-content a:hover,
+#content .views-view-grid .views-field-field-business-type .field-content a:focus {
+  color: #8cc474 !important;
+}
+
+/* line 149, ../../../sass/colors/green/style.scss */
+.properties-grid-page .property-image-group .property-price-group .views-field-field-price,
+.properties-list-page .property-image-group .property-price-group .views-field-field-price,
+.isotope-element .property-image-group .property-price-group .views-field-field-price {
+  background-color: #8cc474;
+}
+/* line 156, ../../../sass/colors/green/style.scss */
+.properties-grid-page .views-field-title a:hover, .properties-grid-page .views-field-title a:focus,
+.properties-list-page .views-field-title a:hover,
+.properties-list-page .views-field-title a:focus,
+.isotope-element .views-field-title a:hover,
+.isotope-element .views-field-title a:focus {
+  color: #8cc474 !important;
+}
+
+/* line 168, ../../../sass/colors/green/style.scss */
+.properties-list-page .views-field-field-business-type .views-label a:hover, .properties-list-page .views-field-field-business-type .views-label a:focus,
+.properties-list-page .views-field-field-business-type .field-content a:hover,
+.properties-list-page .views-field-field-business-type .field-content a:focus {
+  color: #8cc474 !important;
+}
+
+/*agent*/
+/* line 182, ../../../sass/colors/green/style.scss */
+.agent-type .views-field-field-full-name a:hover, .agent-type .views-field-field-full-name a:focus,
+.agent-type .field-name-field-full-name a:hover,
+.agent-type .field-name-field-full-name a:focus,
+.profile .views-field-field-full-name a:hover,
+.profile .views-field-field-full-name a:focus,
+.profile .field-name-field-full-name a:hover,
+.profile .field-name-field-full-name a:focus {
+  color: #8cc474;
+}
+
+/*testimonial*/
+/* line 193, ../../../sass/colors/green/style.scss */
+.testimonials .views-field-field-occupation a:hover, .testimonials .views-field-field-occupation a:focus {
+  color: #8cc474;
+}
+
+/*panel footer*/
+/* line 203, ../../../sass/colors/green/style.scss */
+#panel-footer a:hover, #panel-footer a:focus {
+  color: #8cc474;
+}
+
+/*content*/
+/* line 215, ../../../sass/colors/green/style.scss */
+#main #content .submitted a:hover, #main #content .submitted a:focus,
+#main #content .comment-links a:hover,
+#main #content .comment-links a:focus {
+  color: #8cc474;
+}
+/* line 222, ../../../sass/colors/green/style.scss */
+#main #content .node .group-price .field-name-field-price {
+  background-color: #8cc474;
+}
+/* line 228, ../../../sass/colors/green/style.scss */
+#main #content .node h2 a:hover, #main #content .node h2 a:focus {
+  color: #8cc474;
+}
+/* line 235, ../../../sass/colors/green/style.scss */
+#main #content .created-date {
+  background-color: #8cc474;
+}
+
+/*sidebar*/
+/* line 246, ../../../sass/colors/green/style.scss */
+.sidebar .views-row .views-field-title a:hover, .sidebar .views-row .views-field-title a:focus {
+  color: #8cc474;
+}
+/* line 255, ../../../sass/colors/green/style.scss */
+.sidebar #search-block-form .form-actions:hover:before {
+  color: #8cc474;
+}
+/* line 265, ../../../sass/colors/green/style.scss */
+.sidebar .item-list ul li a:hover, .sidebar .item-list ul li a:focus {
+  color: #8cc474;
+}
+/* line 277, ../../../sass/colors/green/style.scss */
+.sidebar .quicktabs-wrapper .item-list .quicktabs-tabs li a:hover {
+  color: #8cc474;
+}
+/* line 283, ../../../sass/colors/green/style.scss */
+.sidebar .quicktabs-wrapper .item-list .quicktabs-tabs .active a {
+  background-color: #8cc474;
+}
+/* line 285, ../../../sass/colors/green/style.scss */
+.sidebar .quicktabs-wrapper .item-list .quicktabs-tabs .active a:before {
+  border-color: #8cc474 transparent transparent transparent;
+}
+/* line 288, ../../../sass/colors/green/style.scss */
+.sidebar .quicktabs-wrapper .item-list .quicktabs-tabs .active a:hover, .sidebar .quicktabs-wrapper .item-list .quicktabs-tabs .active a:focus {
+  color: white;
+}
+
+/*page contact*/
+/* line 301, ../../../sass/colors/green/style.scss */
+.contact-content a:hover, .contact-content a:focus {
+  color: #8cc474;
+}
+
+/* line 308, ../../../sass/colors/green/style.scss */
+div.modal-forms-modal-content .modal-header {
+  background: #8cc474;
+}
+/* line 311, ../../../sass/colors/green/style.scss */
+div.modal-forms-modal-content .close {
+  background: rgba(140, 196, 116, 0.9);
+}
+/* line 318, ../../../sass/colors/green/style.scss */
+div.modal-forms-modal-content form .item-list li a:hover, div.modal-forms-modal-content form .item-list li a:focus {
+  color: #8cc474;
+}
+/* line 325, ../../../sass/colors/green/style.scss */
+div.modal-forms-modal-content form .form-submit:hover, div.modal-forms-modal-content form .form-submit:focus {
+  background-color: #8cc474;
+}
+
+/*.breadcrumb*/
+/* line 335, ../../../sass/colors/green/style.scss */
+.breadcrumb a:hover, .breadcrumb a:focus {
+  color: #8cc474;
+}
+
+/* line 344, ../../../sass/colors/green/style.scss */
+.logged-in #subscribe .form-submit:hover, .logged-in #subscribe .form-submit:focus {
+  color: #8cc474;
+}
+
+/* line 354, ../../../sass/colors/green/style.scss */
+.comment h3 a:hover, .comment h3 a:focus {
+  color: #8cc474;
+}
+
+/* line 363, ../../../sass/colors/green/style.scss */
+.offer-list .views-field-title a {
+  color: #8cc474 !important;
+}
+/* line 368, ../../../sass/colors/green/style.scss */
+.offer-list .grid-inner:hover, .offer-list .grid-inner:focus {
+  background-color: #8cc474 !important;
+}
+
+/* line 377, ../../../sass/colors/green/style.scss */
+.our-team-list .views-field a:hover, .our-team-list .views-field a:focus {
+  color: #8cc474 !important;
+}
+
+/* line 385, ../../../sass/colors/green/style.scss */
+.contact-info a {
+  color: #8cc474 !important;
+}
+
+/* line 393, ../../../sass/colors/green/style.scss */
+.view-page-list .views-field-title a:hover, .view-page-list .views-field-title a:focus {
+  color: #8cc474;
+}
+
+/* search result */
+/* line 404, ../../../sass/colors/green/style.scss */
+.search-results h3 a:hover, .search-results h3 a:focus {
+  color: #8cc474;
+}
+
+/* comment */
+/* line 417, ../../../sass/colors/green/style.scss */
+.comment ul.inline .comment_forbidden a:hover, .comment ul.inline .comment_forbidden a:focus,
+.comment ul.links.inline .comment_forbidden a:hover,
+.comment ul.links.inline .comment_forbidden a:focus {
+  color: #8cc474;
+}
+
+/* search */
+/* line 428, ../../../sass/colors/green/style.scss */
+legend a:hover, legend a:focus {
+  color: #8cc474;
+}
+
+/* line 437, ../../../sass/colors/green/style.scss */
+.isotope-element a:hover, .isotope-element a:focus {
+  color: #8cc474 !important;
+}
+
+/* line 445, ../../../sass/colors/green/style.scss */
+.panel-highlighted .offer-list .views-field-field-icon {
+  color: #8cc474;
+}
+
+/* line 452, ../../../sass/colors/green/style.scss */
+.news-item .created-date {
+  background: #8cc474;
+}
+
+/* line 459, ../../../sass/colors/green/style.scss */
+.liberty-404-wrapper .liberty-return-back:hover, .liberty-404-wrapper .liberty-return-back:focus {
+  background-color: #8cc474;
+}

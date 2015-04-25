@@ -1,0 +1,138 @@
+/* COLORS */
+/* font size */
+/* font */
+/* effect */
+/* button */
+/* html.scss */
+/* line 4, ../sass/html.scss */
+body {
+  font-family: 'Raleway', sans-serif;
+  font-size: 14px;
+  color: #666666;
+  background: #333333;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* line 13, ../sass/html.scss */
+html {
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+/* line 19, ../sass/html.scss */
+header, nav, section, article, figure, aside, footer {
+  display: block;
+}
+
+/* line 22, ../sass/html.scss */
+a {
+  color: #d94949;
+  -webkit-transition: all 0.3s ease-in;
+  -moz-transition: all 0.3s ease-in;
+  -o-transition: all 0.3s ease-in;
+}
+/* line 25, ../sass/html.scss */
+a:hover, a:focus {
+  color: #333333;
+  text-decoration: none;
+  outline: none;
+}
+
+/* line 32, ../sass/html.scss */
+h1, h2, h3 {
+  margin: 0 0 30px;
+  color: #333333;
+}
+
+/* line 36, ../sass/html.scss */
+h1 {
+  font-size: 2.57em;
+}
+
+/* line 39, ../sass/html.scss */
+h2, h1#page-title {
+  font-weight: 600;
+  font-size: 2.57em;
+  text-transform: uppercase;
+}
+
+/* line 44, ../sass/html.scss */
+h3 {
+  font-size: 1.285em;
+}
+
+/* line 47, ../sass/html.scss */
+h4, h5, h6 {
+  color: #333333;
+  margin: 0 0 20px;
+}
+
+/* line 51, ../sass/html.scss */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* line 56, ../sass/html.scss */
+input, button, select, textarea {
+  background: #fff;
+  padding: 10px;
+  border: 1px solid #dddddd;
+  color: #999999;
+  border-radius: 0;
+}
+
+/* line 66, ../sass/html.scss */
+input:focus, select:focus, textarea:focus {
+  border-color: #666666;
+}
+
+/* line 70, ../sass/html.scss */
+.form-submit {
+  -webkit-transition: all 0.3s ease-in;
+  -moz-transition: all 0.3s ease-in;
+  -o-transition: all 0.3s ease-in;
+  background: #d94949;
+  color: white;
+  border: none;
+  text-transform: uppercase;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+/* line 78, ../sass/html.scss */
+.form-submit:hover, .form-submit:focus {
+  background: #333333;
+}
+
+/* line 83, ../sass/html.scss */
+legend a {
+  color: #333333;
+}
+/* line 85, ../sass/html.scss */
+legend a:hover, legend a:focus {
+  color: #d94949;
+}
+
+/* line 91, ../sass/html.scss */
+label {
+  font-weight: normal;
+}
+
+/* line 94, ../sass/html.scss */
+iframe {
+  max-width: 100%;
+}
+
+/* line 97, ../sass/html.scss */
+p {
+  margin-bottom: 20px;
+}
+
+/* container */
+/* line 103, ../sass/html.scss */
+.section .container {
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
