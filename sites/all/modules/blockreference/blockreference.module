@@ -433,19 +433,19 @@ function _blockreference_formatter_get_block($element) {
     list($module, $delta) = explode(':', $item['moddelta']);
     $block = _blockreference_block($module, $delta);
     if ($block) {
-      $fields = array('title', 'bid');
-      if (module_exists('i18n_block')) {
-        $fields[] = 'i18n_mode';
-      }
-      $query = db_select('block')
-       ->fields('block', $fields)
+      // Fetch all `block` columns for this block, any theme.
+      $query = db_select('block', 'b')
+       ->fields('b')
        ->condition('module', $module)
        ->condition('delta',  $delta)
        ->execute();
-      $result = $query->fetchObject();
+      $result = $query->fetchAssoc();
       if ($result) {
-        foreach ($fields as $field) {
-          $block->{$field} = $result->{$field};
+        // Copy all themes columns over to our block object, except the useless, theme-specific.
+        foreach ($result as $column => $value) {
+          if (!isset($block->$column) && !in_array($column, array('bid', 'theme'))) {
+            $block->$column = $value;
+          }
         }
       }
       $block->region = 'none';
