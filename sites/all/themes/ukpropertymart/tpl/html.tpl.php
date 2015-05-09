@@ -7,9 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="HandheldFriendly" content="true" />
   <meta name="apple-touch-fullscreen" content="YES" />
-  <!-- //META FOR IOS & HANDHELD -->  
-  <link href='http://fonts.googleapis.com/css?family=Raleway:400,500,100,300,700,600,200,800,900' rel='stylesheet' type='text/css'>
-  <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+  <!-- //META FOR IOS & HANDHELD -->
+  <link href='//fonts.googleapis.com/css?family=Raleway:400,500,100,300,700,600,200,800,900' rel='stylesheet' type='text/css'>
+  <link href='//fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
   <?php print $styles; ?>
   <?php print $scripts; ?>
 </head>
