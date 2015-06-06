@@ -1195,12 +1195,17 @@ class views_plugin_query_default extends views_plugin_query {
 
       if (!empty($field['function'])) {
         $info = $this->get_aggregation_info();
-        if (!empty($info[$field['function']]['method']) && function_exists($info[$field['function']]['method'])) {
-          $string = $info[$field['function']]['method']($field['function'], $string);
+        $group_type = $field['function'];
+        if (!empty($info[$group_type]['extender']) && class_exists($info[$group_type]['extender'])) {
+          // Only extend the query object once.
+          // NB: this only works because our extender is the only one around.
+          // See ViewsAggregateQuery for more details.
+          if (!$this->has_aggregate) {
+            $query = $query->extend($info[$group_type]['extender']);
+          }
           $placeholders = !empty($field['placeholders']) ? $field['placeholders'] : array();
-          $query->addExpression($string, $fieldname, $placeholders);
+          call_user_func(array($query, $info[$group_type]['method']), $group_type, $string, $fieldname, $placeholders);
         }
-
         $this->has_aggregate = TRUE;
       }
       // This is a formula, using no tables.
@@ -1492,6 +1497,12 @@ class views_plugin_query_default extends views_plugin_query {
           $view->result[] = $item;
         }
 
+        // Let modules modify the view just after executing the query.
+        foreach (module_implements('views_post_execute_query') as $module) {
+          $function = $module . '_views_post_execute_query';
+          $function($view);
+        }
+
         $this->pager->post_execute($view->result);
 
         if ($this->pager->use_count_query() || !empty($view->get_total_rows)) {
@@ -1519,6 +1530,21 @@ class views_plugin_query_default extends views_plugin_query {
     $view->query->add_field(NULL, "'" . $view->name . ':' . $view->current_display . "'", 'view_name');
   }
 
+  /**
+   * Define aggregate functions and how to apply them to a query.
+   *
+   * @return
+   *   An array of information about aggregate functions, keyed by the SQL
+   *   function name. Each item may have the following properties:
+   *    - 'title': The title used in the UI.
+   *    - 'is aggregate': @todo Does not appear to be used.
+   *    - 'extender': The class of a query extender which must be added to the
+   *      query.
+   *    - 'method': The method to call on the query once it has been extended
+   *      with the above.
+   *    - 'handler': An array of handlers of each type to replace the original
+   *      handler which has this aggregate function applied.
+   */
   function get_aggregation_info() {
     // @todo -- need a way to get database specific and customized aggregation
     // functions into here.
@@ -1529,7 +1555,8 @@ class views_plugin_query_default extends views_plugin_query {
       ),
       'count' => array(
         'title' => t('Count'),
-        'method' => 'views_query_default_aggregation_method_simple',
+        'extender' => 'ViewsAggregateQuery',
+        'method' => 'addAggregateSimple',
         'handler' => array(
           'argument' => 'views_handler_argument_group_by_numeric',
           'field' => 'views_handler_field_numeric',
@@ -1539,7 +1566,8 @@ class views_plugin_query_default extends views_plugin_query {
       ),
       'count_distinct' => array(
         'title' => t('Count DISTINCT'),
-        'method' => 'views_query_default_aggregation_method_distinct',
+        'extender' => 'ViewsAggregateQuery',
+        'method' => 'addAggregateDistinct',
         'handler' => array(
           'argument' => 'views_handler_argument_group_by_numeric',
           'field' => 'views_handler_field_numeric',
@@ -1549,7 +1577,8 @@ class views_plugin_query_default extends views_plugin_query {
       ),
       'sum' => array(
         'title' => t('Sum'),
-        'method' => 'views_query_default_aggregation_method_simple',
+        'extender' => 'ViewsAggregateQuery',
+        'method' => 'addAggregateSimple',
         'handler' => array(
           'argument' => 'views_handler_argument_group_by_numeric',
           'filter' => 'views_handler_filter_group_by_numeric',
@@ -1558,7 +1587,8 @@ class views_plugin_query_default extends views_plugin_query {
       ),
       'avg' => array(
         'title' => t('Average'),
-        'method' => 'views_query_default_aggregation_method_simple',
+        'extender' => 'ViewsAggregateQuery',
+        'method' => 'addAggregateSimple',
         'handler' => array(
           'argument' => 'views_handler_argument_group_by_numeric',
           'filter' => 'views_handler_filter_group_by_numeric',
@@ -1567,7 +1597,8 @@ class views_plugin_query_default extends views_plugin_query {
       ),
       'min' => array(
         'title' => t('Minimum'),
-        'method' => 'views_query_default_aggregation_method_simple',
+        'extender' => 'ViewsAggregateQuery',
+        'method' => 'addAggregateSimple',
         'handler' => array(
           'argument' => 'views_handler_argument_group_by_numeric',
           'filter' => 'views_handler_filter_group_by_numeric',
@@ -1576,7 +1607,18 @@ class views_plugin_query_default extends views_plugin_query {
       ),
       'max' => array(
         'title' => t('Maximum'),
-        'method' => 'views_query_default_aggregation_method_simple',
+        'extender' => 'ViewsAggregateQuery',
+        'method' => 'addAggregateSimple',
+        'handler' => array(
+          'argument' => 'views_handler_argument_group_by_numeric',
+          'filter' => 'views_handler_filter_group_by_numeric',
+          'sort' => 'views_handler_sort_group_by_numeric',
+        ),
+      ),
+      'group_concat' => array(
+        'title' => t('Group concat'),
+        'extender' => 'ViewsAggregateQuery',
+        'method' => 'addAggregateGroupConcat',
         'handler' => array(
           'argument' => 'views_handler_argument_group_by_numeric',
           'filter' => 'views_handler_filter_group_by_numeric',
@@ -1640,15 +1682,6 @@ class views_plugin_query_default extends views_plugin_query {
   }
 }
 
-function views_query_default_aggregation_method_simple($group_type, $field) {
-  return strtoupper($group_type) . '(' . $field . ')';
-}
-
-function views_query_default_aggregation_method_distinct($group_type, $field) {
-  $group_type = str_replace('_distinct', '', $group_type);
-  return strtoupper($group_type) . '(DISTINCT ' . $field . ')';
-}
-
 /**
  * Validation callback for query tags.
  */
@@ -1659,5 +1692,63 @@ function views_element_validate_tags($element, &$form_state) {
       form_error($element, t('The query tags may only contain lower-case alphabetical characters and underscores.'));
       return;
     }
+  }
+}
+
+/**
+ * Query extender for aggregate expressions.
+ *
+ * Provides methods for adding aggregate expressions to query. Each method name
+ * follows the pattern addAggretateTYPE() and has the same parameters: see
+ * addAggregateSimple() for these.
+ *
+ * This all works because we're the only extender being used here.
+ * Should get_aggregation_info() be opened up to let other modules define
+ * aggregation methods (which is http://drupal.org/node/1359298), we'll need a
+ * way to make sure we only extend by each class once (for which there is proof
+ * of concept code here: http://drupal.org/node/1365210).
+ */
+class ViewsAggregateQuery extends SelectQueryExtender {
+  /**
+   * Add a simple aggregate expression to a query.
+   *
+   * @param $group_type
+   *   The grouping function name, eg 'count'.
+   *   Note that all our aggregate expression methods have this parameter but
+   *   methods that are specialized to just one SQL aggregate function will not
+   *   need to make use of it.
+   * @param $column_name
+   *   The column name to aggregate, in the form 'table.column'.
+   * @param $fieldname
+   *   The alias to give the expression, that Views will consider to be the
+   *   name of the field.
+   * @param $placeholders
+   *   The arguments for the expression.
+   */
+  function addAggregateSimple($group_type, $column_name, $fieldname, $placeholders) {
+    // Create the aggregate expression.
+    $function = strtoupper($group_type);
+    $expression = "$function($column_name)";
+    $this->query->addExpression($expression, $fieldname, $placeholders);
+    return $this;
+  }
+
+  /**
+   * Add a DISTINCT aggregate expression to a query.
+   */
+  function addAggregateDistinct($group_type, $column_name, $fieldname, $placeholders) {
+    $group_type = str_replace('_distinct', '', $group_type);
+    $expression = strtoupper($group_type) . '(DISTINCT ' . $column_name . ')';
+    $this->query->addExpression($expression, $fieldname, $placeholders);
+    return $this;
+  }
+
+  /**
+   * Add a GROUP_CONCAT() expression to a query.
+   */
+  function addAggregateGroupConcat($group_type, $column_name, $fieldname, $placeholders) {
+    $expression = "(GROUP_CONCAT($column_name))";
+    $this->query->addExpression($expression, $fieldname, $placeholders);
+    return $this;
   }
 }
