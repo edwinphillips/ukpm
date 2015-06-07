@@ -139,7 +139,7 @@ class GeoclusterSearchApiSolrService extends SearchApiSolrService {
         dd(timer_read("geocluster") . "ms: pre-clustered by geohash: " . count($groups));
       }
 
-      $this->algorithm->setValues(&$results['results']);
+      $this->algorithm->setValues($results['results']);
       $this->algorithm->clusterByNeighborCheck($results_by_geohash);
 
       if (module_exists('devel')) {
