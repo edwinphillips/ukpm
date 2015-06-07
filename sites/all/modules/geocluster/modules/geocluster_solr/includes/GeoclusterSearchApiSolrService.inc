@@ -81,7 +81,7 @@ class GeoclusterSearchApiSolrService extends SearchApiSolrService {
    * @param Apache_Solr_Response $response
    *   The response object returned by Solr.
    */
-  protected function postQuery(array &$results, SearchApiQueryInterface $query, Apache_Solr_Response $response) {
+  protected function postQuery(array &$results, SearchApiQueryInterface $query, $response) {
     if (module_exists('devel')) {
       dd(timer_read("geocluster") . "ms: started clustering");
     }
@@ -164,7 +164,7 @@ class GeoclusterSearchApiSolrService extends SearchApiSolrService {
    *   - results: An array of search results, as specified by
    *     SearchApiQueryInterface::execute().
    */
-  protected function extractResults(SearchApiQueryInterface $query, Apache_Solr_Response $response) {
+  protected function extractResults(SearchApiQueryInterface $query, $response) {
     if ($this->algorithm) {
       // Set grouping options, so search api will process single result groups correctly.
       $options = array(
