@@ -106,7 +106,7 @@ class GeoclusterSearchApiSolrService extends SearchApiSolrService {
       $stats_lat = $stats->{$stats_field_lat}->facets->{$grouped_field};
       $stats_lon = $stats->{$stats_field_lon}->facets->{$grouped_field};
 
-      foreach ($groups as $key => &$group) {
+      foreach ($groups as $key => $group) {
 
         // Clustered results.
         // @todo: create cluster entity instead of fake result
