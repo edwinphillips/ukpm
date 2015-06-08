@@ -32,3 +32,4 @@ files[] = views/handlers/geocluster_handler_field_default.inc
 files[] = views/handlers/geocluster_handler_field_numeric.inc
 
 stylesheets[all][] = css/geocluster.css
+registry_autoload[] = PSR-4

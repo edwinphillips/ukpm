@@ -60,6 +60,11 @@ abstract class GeoclusterAlgorithm {
   protected $total_items;
 
   /**
+   * Flag to skip whole clustering process.
+   */
+  protected $skipClustering;
+
+  /**
    * Constructor.
    *
    * @param $config
@@ -67,7 +72,9 @@ abstract class GeoclusterAlgorithm {
    * @param $zoom
    * @param $field_handler views_handler_field
    */
-  function __construct($config, $cluster_distance, $zoom, $field_handler) {
+  public function __construct($config, $cluster_distance, $zoom, $field_handler) {
+    // Check if cluster distance is negative, if so disable clustering.
+    $this->skipClustering($cluster_distance < 0);
     $this->config = $config;
     $this->field_handler = $field_handler;
     $this->cluster_distance = $cluster_distance;
@@ -88,6 +95,21 @@ abstract class GeoclusterAlgorithm {
    */
   abstract function post_execute();
 
+  /**
+   * Allows to skip the clustering process.
+   *
+   * @param null|bool $skip
+   *   If the parameter is give it set's the state of the skipping flag.
+   *
+   * @return bool
+   *   TRUE if the clustering is disabled, FALSE otherwise.
+   */
+  public function skipClustering($skip = NULL) {
+    if (isset($skip)) {
+      $this->skipClustering = (bool) $skip;
+    }
+    return $this->skipClustering;
+  }
 
   /*** DEBUGGING-RELATED WRAPPER FUNCTIONS ***/
 
