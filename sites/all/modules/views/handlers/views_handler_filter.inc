@@ -1173,16 +1173,29 @@ class views_handler_filter extends views_handler {
         $selected_group = $input[$this->options['group_info']['identifier']];
       }
       if ($selected_group == 'All' && !empty($this->options['group_info']['optional'])) {
+        $input['form_widget_defaults'][$this->options['expose']['identifier']] = $selected_group;
         return NULL;
       }
-      if ($selected_group != 'All' && empty($this->options['group_info']['group_items'][$selected_group])) {
+      if ($selected_group != 'All' && is_scalar($selected_group) && empty($this->options['group_info']['group_items'][$selected_group])) {
         return FALSE;
       }
-      if (isset($selected_group) && isset($this->options['group_info']['group_items'][$selected_group])) {
+      if (isset($selected_group) && is_scalar($selected_group) && isset($this->options['group_info']['group_items'][$selected_group])) {
         $input[$this->options['expose']['operator']] = $this->options['group_info']['group_items'][$selected_group]['operator'];
 
         // Value can be optional, For example for 'empty' and 'not empty' filters.
         if (!empty($this->options['group_info']['group_items'][$selected_group]['value'])) {
+          if (!isset($input['form_widget_defaults'][$this->options['expose']['identifier']])) {
+            // Stores away the current input values coming from the form widget,
+            // so that they can be safely saved later as valid Forms API
+            // defaults if they need to be 'remembered' in the session
+            // variable.
+            if (is_array($input[$this->options['group_info']['identifier']])) {
+              $input['form_widget_defaults'][$this->options['expose']['identifier']] = array_filter($input[$this->options['group_info']['identifier']]);
+            }
+            else {
+              $input['form_widget_defaults'][$this->options['expose']['identifier']] = $input[$this->options['group_info']['identifier']];
+            }
+          }
           $input[$this->options['expose']['identifier']] = $this->options['group_info']['group_items'][$selected_group]['value'];
         }
         $this->options['expose']['use_operator'] = TRUE;
@@ -1203,7 +1216,8 @@ class views_handler_filter extends views_handler {
    */
   function group_multiple_exposed_input(&$input) {
     if (!empty($input[$this->options['group_info']['identifier']])) {
-      return array_filter($input[$this->options['group_info']['identifier']]);
+      $filtered_array = array_filter($input[$this->options['group_info']['identifier']]);
+      return !empty($filtered_array) ? $filtered_array : array(0 => NULL);
     }
     return array();
   }
@@ -1238,7 +1252,7 @@ class views_handler_filter extends views_handler {
     // so we should erase whatever happened to be there.
     if ($status === FALSE && isset($_SESSION['views'][$this->view->name][$display_id])) {
       $session = &$_SESSION['views'][$this->view->name][$display_id];
-
+      
       if (isset($session[$this->options['group_info']['identifier']])) {
         unset($session[$this->options['group_info']['identifier']]);
       }
@@ -1250,8 +1264,13 @@ class views_handler_filter extends views_handler {
       }
 
       $session = &$_SESSION['views'][$this->view->name][$display_id];
-
-      $session[$this->options['group_info']['identifier']] = $input[$this->options['group_info']['identifier']];
+   
+      if (isset($input['form_widget_defaults'][$this->options['group_info']['identifier']])) {
+        $session[$this->options['group_info']['identifier']] = $input['form_widget_defaults'][$this->options['group_info']['identifier']];
+      }
+      else {
+        unset($session[$this->options['group_info']['identifier']]);
+      }
     }
   }
 

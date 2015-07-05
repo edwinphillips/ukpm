@@ -50,38 +50,7 @@ function geocluster_solr_views_data_alter(&$data) {
             'handler' => 'geocluster_handler_field_numeric',
           ),
         );
-        $item[$geocluster_field . '_min_lat'] = array(
-          'group' => 'Content',
-          'title' => 'Geocluster minimal lat',
-          'help' => 'Geocluster minimal lat',
-          'field' => array(
-            'handler' => 'geocluster_handler_field_numeric',
-          ),
-        );
-        $item[$geocluster_field . '_min_lon'] = array(
-          'group' => 'Content',
-          'title' => 'Geocluster minimal lon',
-          'help' => 'Geocluster minimal lon',
-          'field' => array(
-            'handler' => 'geocluster_handler_field_numeric',
-          ),
-        );
-        $item[$geocluster_field . '_max_lat'] = array(
-          'group' => 'Content',
-          'title' => 'Geocluster maximum lat',
-          'help' => 'Geocluster maximum lat',
-          'field' => array(
-            'handler' => 'geocluster_handler_field_numeric',
-          ),
-        );
-        $item[$geocluster_field . '_max_lon'] = array(
-          'group' => 'Content',
-          'title' => 'Geocluster maximum lon',
-          'help' => 'Geocluster maximum lon',
-          'field' => array(
-            'handler' => 'geocluster_handler_field_numeric',
-          ),
-        );
+
       }
     }
   }
@@ -96,7 +65,7 @@ function geocluster_solr_views_plugins() {
       'geocluster_search_api_views_query' => array(
         'title' => t('Geocluster Search API Query'),
         'help' => t('Geocluster Solr Query will be generated and run using the Search API.'),
-        'handler' => 'GeoclusterSearchApiViewsQuery',
+        'handler' => 'GeoclusterSearchApiViewsQuery'
       ),
     ),
   );

@@ -33,9 +33,6 @@ class GeohashHelper {
     list($width, $height) = GeoclusterHelper::backwardMercator($x, $y);
 
     $hashLen = GeohashHelper::lookupHashLenForWidthHeight($width, $height);
-    if ($hashLen == GEOHASH_PRECISION) {
-      return $hashLen;
-    }
     return $hashLen + 1;
   }
 

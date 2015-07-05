@@ -20,3 +20,11 @@ features[search_api_index][] = geocluster_index
 features[search_api_server][] = geocluster_server
 features[uuid_bean][] = 82422f96-b1d3-43f8-b536-43e36d9db72c
 features[views_view][] = geocluster_test_solr
+
+
+; Information added by drush on 2015-07-05
+version = "7.x-1.0-beta2+6-dev"
+core = "7.x"
+project = "geocluster"
+datestamp = "1436095842"
+

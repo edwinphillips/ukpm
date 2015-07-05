@@ -4,17 +4,15 @@
 
   Drupal.leaflet.create_layer = function(layer, key) {
     if (layer.type === 'quad') {
-      var mapLayer = L.tileLayerQuad(layer.urlTemplate, layer.options);
+      var mapLayer = new L.TileLayerQuad(layer.urlTemplate, layer.options);
       mapLayer._leaflet_id = key;
-      mapLayer._type = 'quad';
       return mapLayer;
     }
     if (layer.type === 'google' && layer.options.detectRetina && L.Browser.retina) {
       layer.urlTemplate += '&style=high_dpi&w=512';
       layer.options.tileSize = 512;
-      var mapLayer = L.tileLayer(layer.urlTemplate, layer.options);
+      var mapLayer = new L.TileLayer(layer.urlTemplate, layer.options);
       mapLayer._leaflet_id = key;
-      mapLayer._type = 'google';
       return mapLayer;
     }
     // Default to the original code;
@@ -58,7 +56,3 @@ L.TileLayerQuad = L.TileLayer.extend({
     return quadKey;
   }
 });
-
-L.tileLayerQuad = function(urlTemplate, options) {
-  return new L.TileLayerQuad(urlTemplate, options);
-};
