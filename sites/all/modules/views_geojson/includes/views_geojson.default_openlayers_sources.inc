@@ -29,7 +29,7 @@ function views_geojson_default_openlayers_sources_alter(&$sources) {
           $ol_source->factory_service = 'openlayers.Source:GeoJSON';
 
           $ol_source->options = array(
-            'url' => url($view->display_handler->get_url(), array('absolute' => TRUE)),
+            'url' => url($view->display_handler->get_url(), array('absolute' => FALSE)),
           );
 
           // Determine if we should use a BBox strategy.
