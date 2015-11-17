@@ -156,9 +156,6 @@ function geocoder_field_attach_presave($entity_type, $entity) {
       if (($field_value = geocoder_widget_get_field_value($entity_type, $field_instance, $entity)) !== FALSE) {
         $entity->{$field_instance['field_name']} = $field_value;
       }
-      else {
-        $entity->{$field_instance['field_name']} = array();
-      }
     }
   }
 }
@@ -229,7 +226,7 @@ function geocoder_widget_get_field_value($entity_type, $field_instance, $entity 
     }
     // If no valid source values were passed.
     if (empty($source_field_values)) {
-      return FALSE;
+      return array();
     }
 
     // For entities being updated, determine if another geocode is necessary
@@ -238,7 +235,8 @@ function geocoder_widget_get_field_value($entity_type, $field_instance, $entity 
         //@@TODO: Deal with entity-properties (non-fields)
         //@@TODO: This isn't working with file fields. Should use some kind of lookup / map
         $field_original = field_get_items($entity_type, $entity->original, $field_name, isset($entity->original->language) ? $entity->original->language : NULL);
-        if (!empty($field_original)) {
+        $target_original = field_get_items($entity_type, $entity->original, $field_instance['field_name'], isset($entity->original->language) ? $entity->original->language : NULL);
+        if (!empty($field_original) && !empty($target_original)) {
           $diff = geocoder_widget_array_recursive_diff($field_original, $source_field_values);
           if (empty($diff)) {
             return FALSE;
@@ -293,13 +291,7 @@ function geocoder_widget_get_field_value($entity_type, $field_instance, $entity 
           }
         }
         catch (Exception $e) {
-          $uri_info = entity_uri($entity_type, $entity);
-          watchdog_exception('geocoder', $e, NULL, array(), WATCHDOG_ERROR,
-            l(t('View offending entity (@entity_type: @bundle).', array(
-              '@entity_type' => $entity_info['label'],
-              '@bundle' => isset($entity->type) ? $entity->type : '',
-            )), $uri_info['path'])
-          );
+          watchdog_exception('geocoder', $e);
           return FALSE;
         }
       }
@@ -333,7 +325,9 @@ function geocoder_widget_get_field_concat($items) {
   // Check if we should concatenate
   $concat = '';
   foreach ($items as $item) {
-    $concat .= trim($item['value']) . ', ';
+    if (!empty($item['value'])) {
+      $concat .= trim($item['value']) . ', ';
+    }
   }
   $concat = trim($concat, ', ');
   $items = array(array('value' => $concat));
@@ -461,12 +455,12 @@ function geocoder_widget_array_recursive_diff($aArray1, $aArray2) {
       if (is_array($mValue)) {
         $aRecursiveDiff = geocoder_widget_array_recursive_diff($mValue, $aArray2[$mKey]);
         if (count($aRecursiveDiff)) { $aReturn[$mKey] = $aRecursiveDiff; }
-      } else {
+      } elseif (!empty($mValue)) {
         if ($mValue != $aArray2[$mKey]) {
           $aReturn[$mKey] = $mValue;
         }
       }
-    } else {
+    } elseif (!empty($mValue)) {
       $aReturn[$mKey] = $mValue;
     }
   }
