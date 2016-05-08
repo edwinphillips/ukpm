@@ -37,21 +37,6 @@ function geocoder_google($address, $options = array()) {
       'sensor' => 'false',
     );
 
-    if (isset($options['extra_query']) && is_array($options['extra_query'])) {
-      $query += $options['extra_query'];
-    }
-
-    // Add any given biasing.
-    if (!empty($options['biasing']['bounds'])) {
-      $query['bounds'] = $options['biasing']['bounds'];
-    }
-    if (!empty($options['biasing']['region'])) {
-      $query['region'] = $options['biasing']['region'];
-    }
-    if (!empty($options['biasing']['components'])) {
-      $query['components'] = $options['biasing']['components'];
-    }
-
     $url = url("http://maps.googleapis.com/maps/api/geocode/json", array('query' => $query));
     $result = drupal_http_request($url);
     $delay_trigger = TRUE;
@@ -137,8 +122,8 @@ function geocoder_google($address, $options = array()) {
 
     return $geometry;
   } catch (Exception $e) {
-    watchdog_exception('geocoder', $e);
-    return FALSE;
+    // Just rethrow the exception, the geocoder widget handles it.
+    throw $e;
   }
 }
 
@@ -146,7 +131,7 @@ function geocoder_google_field($field, $field_item, $options = array()) {
   if ($field['type'] == 'text' || $field['type'] == 'text_long' || $field['type'] == 'text_with_summary' || $field['type'] == 'computed') {
     return geocoder_google($field_item['value'], $options);
   }
-  if ($field['type'] == 'addressfield' && module_exists('addressfield') && !addressfield_field_is_empty($field_item, $field)) {
+  if ($field['type'] == 'addressfield') {
     $address = geocoder_widget_parse_addressfield($field_item);
     return geocoder_google($address, $options);
   }
@@ -156,7 +141,7 @@ function geocoder_google_field($field, $field_item, $options = array()) {
   }
   if ($field['type'] == 'taxonomy_term_reference') {
     $term = taxonomy_term_load($field_item['tid']);
-    return geocoder_google($term->name, $options);
+    return geocoder_google($term->name);
   }
 }
 
@@ -192,34 +177,6 @@ function geocoder_google_form($default_values = array()) {
     ),
     '#default_value' => isset($default_values['reject_results']) ? $default_values['reject_results'] : array(),
     '#description' => 'Reject results that do not meet a certain level of quality or precision. Check all types of results to reject.',
-  );
-
-  $form['biasing'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Result biasing'),
-    '#description' => t('To help reduce ambiguous results you can set give preference to or restrict results using viewports biasing, region biasing and component filtering. Please see !link for details on how to use these options.', array(
-      '!link' => l(t('The Google Geocoding API'), 'https://developers.google.com/maps/documentation/geocoding/'),
-    )),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  );
-  $form['biasing']['bounds'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Viewport biasing'),
-    '#description' => t('Provide latitude/longitude coordinates of the southwest and northeast corners using a pipe (|) to separate the coordinates.'),
-    '#default_value' => isset($default_values['biasing']['bounds']) ? $default_values['biasing']['bounds']: NULL,
-  );
-  $form['biasing']['region'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Region biasing'),
-    '#description' => t('Provide a ccTLD for the desired region.'),
-    '#default_value' => isset($default_values['biasing']['region']) ? $default_values['biasing']['region']: NULL,
-  );
-  $form['biasing']['components'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Component filtering'),
-    '#description' => t('Provide a set of component:value pairs separated by a pipe (|) to filter results.'),
-    '#default_value' => isset($default_values['biasing']['components']) ? $default_values['biasing']['components']: NULL,
   );
 
   return $form;

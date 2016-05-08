@@ -6,10 +6,7 @@ dependencies[] = libraries
 
 files[] = leaflet.formatters.inc
 
-
-; Information added by drush on 2015-07-05
+; Information added by drush on 2014-01-23
 version = "7.x-1.1+1-dev"
-core = "7.x"
 project = "leaflet"
-datestamp = "1436095838"
-
+datestamp = "1390503811"

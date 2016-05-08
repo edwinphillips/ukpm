@@ -433,7 +433,8 @@ function _field_invoke_get_instances($entity_type, $bundle, $options) {
   elseif (isset($options['field_name'])) {
     // Single-field mode by field name: field_info_instance() does the
     // filtering.
-    $instances = array(field_info_instance($entity_type, $options['field_name'], $bundle));
+    $instance = field_info_instance($entity_type, $options['field_name'], $bundle);
+    $instances = $instance ? array($instance) : array();
   }
   else {
     $instances = field_info_instances($entity_type, $bundle);
