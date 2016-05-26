@@ -1,0 +1,215 @@
+diff --git a/views/views_geojson_bbox_argument.inc b/views/views_geojson_bbox_argument.inc
+index 1dc429f..3a838fd 100644
+--- a/views/views_geojson_bbox_argument.inc
++++ b/views/views_geojson_bbox_argument.inc
+@@ -2,7 +2,7 @@
+ 
+ /**
+  * @file
+- *
++ * Defines an argument handler that handles a bbox string.
+  */
+ 
+ /**
+@@ -10,28 +10,41 @@
+  */
+ class views_geojson_bbox_argument extends views_handler_argument {
+ 
+-  /*
++  /**
+    * Filter options definition.
+    */
+-  function option_definition() {
++  public function option_definition() {
+     $options = parent::option_definition();
+     return $options;
+   }
+ 
+   /**
+-   *
++   * Provide additional option form elements.
+    */
+-  function default_argument_form(&$form, &$form_state) {
++  public function default_argument_form(&$form, &$form_state) {
+     parent::default_argument_form($form, $form_state);
+     // Clarify this, since we're treating pulling from the query string as
+     // different than a normal arg.
+     $form['no_argument']['#title'] = 'When the filter value is NOT in the URL <em>as a normal Drupal argument</em>';
+   }
+ 
+-  /*
+-   * Split BBOX string into {left, bottom, right, top}
++  /**
++   * Parses the combined bbox value into the single values.
++   *
++   * A bbox is defined as: left,bottom,right,top. This method splits the
++   * combined values into it's parts and returns them as associative array.
++   *
++   * @param string $bbox_coords_str
++   *   Combined bbox argument in the format: left,bottom,right,top
++   *
++   * @return array|FALSE
++   *   Associative array with the bbox coordinates in the keys:
++   *   - left
++   *   - bottom
++   *   - right
++   *   - top
+    */
+-  function _explode_bbox_coords($bbox_coords_str) {
++  protected function parseBboxString($bbox_coords_str) {
+     $bbox_coords = explode(',', $bbox_coords_str);
+     if (count($bbox_coords) == 4) {
+       $bbox = array(
+@@ -42,32 +55,31 @@ class views_geojson_bbox_argument extends views_handler_argument {
+       );
+       return $bbox;
+     }
++    return FALSE;
+   }
+ 
+-  /*
++  /**
+    * Use the filter to modify the query.
+    */
+-  function query($group_by = FALSE) {
+-    $this->ensure_my_table();
++  public function query($group_by = FALSE) {
++    // If bbox not set properly, don't edit the query.
++    // @TODO Move this into argument validation?
++    if (!$bbox = $this->parseBboxString($this->argument)) {
++      // @TODO how to properly bail out here? Not modifying the query may leads
++      // to unwanted results. How about adding a query that doesn't return a
++      // thing?
++      return;
++    }
++
+     // TODO: this argument should be set in
+     // views_plugin_argument_default_bboxquery::get_argument
+     // unfortunately that seems broken.
+     // @see http://drupal.org/node/1884214
+-    if ((empty($this->argument)) || ($this->view->base_field == 'search_api_id')) {
+-      return;
+-     }
+-    $this->ensure_my_table();
+-    $bbox = $this->_explode_bbox_coords($this->argument);
+-
+-    // If bbox not set properly, don't edit the query.
+-    // @TODO: Move this into argument validation?
+-    if (!isset($bbox['left']) ||
+-      !isset ($bbox['bottom']) ||
+-      !isset ($bbox['right']) ||
+-      !isset ($bbox['top'])) {
++    if ((empty($this->argument))) {
+       return;
+     }
+ 
++    $this->ensure_my_table();
+     if (isset($this->view->display_handler->display->display_options['style_options'])) {
+       $data_source = $this->view->display_handler->display->display_options['style_options']['data_source'];
+     }
+@@ -76,7 +88,7 @@ class views_geojson_bbox_argument extends views_handler_argument {
+     }
+ 
+     // We handle latlon and geofield data_source types.
+-    // No support yet for WKT.
++    // No general support yet for WKT.
+     if ($data_source['value'] == 'latlon') {
+       $lat_field_obj = $this->view->field[$data_source['latitude']];
+       $lon_field_obj = $this->view->field[$data_source['longitude']];
+@@ -89,7 +101,45 @@ class views_geojson_bbox_argument extends views_handler_argument {
+       // latlon, since we're just going to get lat & lon from geofield anyway.
+       $lat_field_obj = $lon_field_obj = $this->view->field[$data_source['geofield']];
+       $lat_field_table = $lon_field_table = $lat_field_obj->table;
+-    } else {
++    }
++    elseif ($data_source['value'] == 'wkt') {
++      // Just works with Search API Views for now.
++      $wkt_field_obj = $this->view->field[$data_source['wkt']];
++      $wkt_field_table = $wkt_field_obj->table;
++    }
++
++    // If this is a solr api views query we need to get the related location
++    // field.
++    if ($this->query instanceof SearchApiViewsQuery) {
++      $location_fields = search_api_location_get_location_fields($this->query->getIndex());
++      if (!empty($lat_field_obj)) {
++        $field_base_name = substr($lat_field_obj->real_field, 0, strrpos($lat_field_obj->real_field, ':'));
++      }
++      elseif (!empty($wkt_field_obj)) {
++        $field_base_name = substr($wkt_field_obj->real_field, 0, strrpos($wkt_field_obj->real_field, ':'));
++      }
++      $lat_lon_field_name = $field_base_name . ':latlon';
++      // Check if there's a related location field.
++      if (isset($location_fields[$lat_lon_field_name])) {
++        $search_api_location_field = $lat_lon_field_name;
++      }
++    }
++
++    // If this a search api index create the search_api_location query option
++    // let the index services handle the query.
++    if (!empty($search_api_location_field) && $this->query instanceof SearchApiViewsQuery) {
++      $location_options = $this->query->getOption('search_api_location', array());
++      $location_options[] = array(
++        'field' => $this->options['search_api_location_field'],
++        'bbox' => $bbox,
++      );
++      $this->query->setOption('search_api_location', $location_options);
++      // Exit as now the Search API will take care of modifying the query.
++      return;
++    }
++
++    // Check if we've the required field information to continue.
++    if (empty($lon_field_obj) || empty($lat_field_obj)) {
+       return;
+     }
+ 
+@@ -98,38 +148,42 @@ class views_geojson_bbox_argument extends views_handler_argument {
+     if (isset($lat_field_obj->field_info) && $lat_field_obj->field_info['type'] == 'geofield') {
+       // @TODO: Maybe the field name can really just be "${lat_field_obj}_lat"?
+       $lat_field_name = $lat_field_obj->field_info['storage']['details']['sql']['FIELD_LOAD_CURRENT'][$lat_field_table]['lat'];
+-    } else {
++    }
++    else {
+       $lat_field_name = $lat_field_obj->real_field;
+     }
+     if (isset($lon_field_obj->field_info) && $lon_field_obj->field_info['type'] == 'geofield') {
+       $lon_field_name = $lon_field_obj->field_info['storage']['details']['sql']['FIELD_LOAD_CURRENT'][$lon_field_table]['lon'];
+-    } else {
++    }
++    else {
+       $lon_field_name = $lon_field_obj->real_field;
+     }
+ 
+     // Add JOIN(s) to query.
+     $this->query->ensure_table($lat_field_table);
+-     if ($lon_field_table != $lat_field_table) {
++    if ($lon_field_table != $lat_field_table) {
+       $this->query->ensure_table($lon_field_table);
+     }
+ 
+     // Add WHERE(s) to query.
+     $left = $bbox['left'];
+     $right = $bbox['right'];
+-    // OpenLayers' longitude bbox values can be >180 or <-180 when the map wraps around.
+-    // We need to turn these into BETWEENs with OR.
++    // OpenLayers' longitude bbox values can be >180 or <-180 when the map wraps
++    // around. We need to turn these into BETWEENs with OR.
+     if ($right - $left < 360) {
+       $group = $this->query->set_where_group('AND');
+       if ($left > -180) {
+         $this->query->add_where($group, "$lon_field_table.$lon_field_name", $left, '>=');
+-      } else {
++      }
++      else {
+         $this->query->set_where_group('OR', $group);
+         $left = -1 * ($left % 180);
+         $this->query->add_where($group, "$lon_field_table.$lon_field_name", array($left, 0), 'BETWEEN');
+       }
+       if ($right < 180) {
+         $this->query->add_where($group, "$lon_field_table.$lon_field_name", $right, '<=');
+-      } else {
++      }
++      else {
+         $this->query->set_where_group('OR', $group);
+         $right = -1 * ($right % 180);
+         $this->query->add_where($group, "$lon_field_table.$lon_field_name", array($right, 0), 'BETWEEN');

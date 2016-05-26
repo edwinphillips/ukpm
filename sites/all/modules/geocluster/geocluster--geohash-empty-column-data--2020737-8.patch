@@ -1,0 +1,55 @@
+diff --git a/geocluster.geohash.inc b/geocluster.geohash.inc
+index f8a2967..bab1717 100644
+--- a/geocluster.geohash.inc
++++ b/geocluster.geohash.inc
+@@ -32,25 +32,36 @@ function geocluster_field_schema_alter(&$schema, $field) {
+     }
+   }
+ }
+-
+ /**
+- * Save geohash information to columns we have added.
++ * Implements hook_entity_presave().
++ *
++ * Adds the geohash column data to geofield locations.
+  *
+- * Implements hook_field_attach_presave().
++ * @param (object) $entity
++ *   The entity object which is about to be saved
++ * @param $entity_type
++ *   The type of the entity that is about to be saved.
+  */
+-function geocluster_field_attach_presave($entity_type, $entity) {
+-  $field_info = field_info_field_by_ids();
++function geocluster_entity_presave($entity, $entity_type) {
++
++  // Get some useful info about the entity.
++  $field_info_by_id = field_info_field_by_ids();
+   list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
+-  foreach (field_info_instances($entity_type, $bundle) as $name => $field_info_instance) {
+-    $is_valid_field_instance = isset($field_info_instance['field_id']) && isset($field_info[$field_info_instance['field_id']]['type']);
+-    if ($is_valid_field_instance
+-        &&'geofield' === $field_info[$field_info_instance['field_id']]['type']
+-        && !empty($entity->{$name}[LANGUAGE_NONE][0])) {
+-      $field = &$entity->{$name}[LANGUAGE_NONE][0];
++  $field_info_instances = field_info_instances($entity_type, $bundle);
+ 
+-      // Add data for geohash prefix columns.
+-      for ($i = GEOCLUSTER_GEOHASH_LENGTH; $i > 0; $i--) {
+-        $field['geocluster_index_' . $i] = _geocluster_get_geohash_prefix($field['geohash'], $i);
++  // If this is a geofield, we need to add the geohash column data.
++  foreach ($field_info_instances as $field_name => $field_info) {
++    if ($field_info_by_id[$field_info['field_id']]['type'] == 'geofield') {
++      if (!empty($entity->{$field_name}[LANGUAGE_NONE])) {
++        foreach ($entity->{$field_name}[LANGUAGE_NONE] as $delta => $field) {
++          // Add data for geohash prefix columns.
++          for ($i = GEOCLUSTER_GEOHASH_LENGTH; $i > 0; $i--) {
++            $geohash_key = 'geocluster_index_' . $i;
++            $location = field_get_items($entity_type, $entity, $field_name);
++            $geohash_prefix = _geocluster_get_geohash_prefix($location[0]['geohash'], $i);
++            $entity->{$field_name}[LANGUAGE_NONE][$delta][$geohash_key] = $geohash_prefix;
++          }
++        }
+       }
+     }
+   }
